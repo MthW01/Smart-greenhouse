@@ -1,0 +1,55 @@
+#include "DHT.h"
+#define DELAY 5000              // Задержка     = 5000 мс = 5 с
+
+#define PHOTO_SENSOR_PIN 13     // Пин светогого датчика = 13
+
+#define DHT_PIN 2               // Номер пина   = 2
+#define DHT_TYPE DHT22          // Тип датчика влажности и температуры воздуха  = DHT22
+DHT dht(DHT_PIN, DHT_TYPE);     // Инициализация датчика влажности и температуры воздуха
+
+void setup() 
+{
+  Serial.begin(9600);
+  dht.begin();
+}
+
+void loop() 
+{
+  delay(DELAY);
+  checkLight();
+  checkAirHumidityAndTemperature();
+  Serial.println();
+}
+
+void checkLight() 
+{
+  float l = digitalRead(PHOTO_SENSOR_PIN);
+  if (isnan(l)) 
+  {
+    Serial.println("Ошибка считывания уровня освещённости.");
+  }
+  Serial.print("Уровень освещения: ");
+  Serial.println(l);
+}
+
+void checkAirHumidityAndTemperature()
+{
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+  if (isnan(h)) 
+  {
+    Serial.println("Ошибка считывания влажности воздуха.");
+    return;
+  }
+  if (isnan(t)) 
+  {
+    Serial.println("Ошибка считывания температуры воздуха.");
+    return;
+  }
+  Serial.print("Влажность воздуха: ");
+  Serial.print(h);
+  Serial.println(" %");
+  Serial.print("Температура воздуха: ");
+  Serial.print(t);
+  Serial.println(" *C ");
+}
